@@ -1,26 +1,31 @@
 const express = require("express");
 const http = require("http");
-const { Server } = require("socket.io");
 const cors = require("cors");
+const { Server } = require("socket.io");
 
 const app = express();
 const server = http.createServer(app);
 
-// GANTI "http://localhost:3000" DENGAN IP/DOMAIN FRONTEND-MU
+// Aktifkan CORS untuk semua origin (atau batasi kalau mau)
+app.use(cors({
+  origin: "*", // Ganti ini jika mau dibatasi ke domain tertentu
+  methods: ["GET", "POST"]
+}));
+
+// Socket.IO instance dengan CORS juga!
 const io = new Server(server, {
   cors: {
-    origin: "*",            // atau "http://18.140.184.137" kalau mau spesifik
+    origin: "*", // HARUS ada ini!
     methods: ["GET", "POST"]
   }
 });
 
-app.use(cors());
-
-// (Opsional) untuk serving file statis
+// Route testing
 app.get("/", (req, res) => {
-  res.send("Socket.IO backend is running!");
+  res.send("Socket.IO backend aktif!");
 });
 
+// Handle socket event
 io.on("connection", (socket) => {
   console.log("User connected");
 
@@ -33,6 +38,7 @@ io.on("connection", (socket) => {
   });
 });
 
+// Start server
 server.listen(3000, () => {
   console.log("Server running on port 3000");
 });
